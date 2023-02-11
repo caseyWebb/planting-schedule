@@ -79,7 +79,7 @@ perform :
     }
     -> Effect pageMsg
     -> Cmd msg
-perform ({ fromPageMsg } as helpers) effect =
+perform ({ fromPageMsg, runFetcher } as helpers) effect =
     case effect of
         None ->
             Cmd.none
@@ -91,4 +91,4 @@ perform ({ fromPageMsg } as helpers) effect =
             Cmd.batch (List.map (perform helpers) list)
 
         SubmitFetcher record ->
-            helpers.runFetcher record
+            runFetcher record

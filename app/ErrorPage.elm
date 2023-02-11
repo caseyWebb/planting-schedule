@@ -2,8 +2,8 @@ module ErrorPage exposing (ErrorPage(..), Model, Msg, head, init, internalError,
 
 import Effect exposing (Effect)
 import Head
-import Html
-import Html.Events exposing (onClick)
+import Html.Styled as Html
+import Html.Styled.Events exposing (onClick)
 import View exposing (View)
 
 

@@ -1,0 +1,24 @@
+{
+  "Beans": [
+    {
+      "type": "direct-sow",
+      "start": "3/15",
+      "end": "4/20"
+    }
+  ],
+  "Beets": [
+    {
+      "type": "direct-sow",
+      "start": "2/15",
+      "end": "3/15"
+    }
+  ],
+  "Broccoli": [
+    {
+      "type": "transplant",
+      "sowWeeksPrior": 6,
+      "start": "2/1",
+      "end": "2/30"
+    }
+  ]
+}

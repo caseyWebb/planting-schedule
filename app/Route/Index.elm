@@ -1,10 +1,14 @@
 module Route.Index exposing (ActionData, Data, Model, Msg, route)
 
 import BackendTask exposing (BackendTask)
+import Css
+import Data.PlantingDates as PlantingDates exposing (PlantingDate(..), PlantingDates)
+import Dict
 import FatalError exposing (FatalError)
 import Head
 import Head.Seo as Seo
-import Html
+import Html.Styled as Html exposing (Html)
+import Html.Styled.Attributes as Attributes
 import Pages.Msg
 import Pages.PageUrl exposing (PageUrl)
 import Pages.Url
@@ -12,6 +16,10 @@ import Path
 import Route
 import RouteBuilder exposing (StatelessRoute, StaticPayload)
 import Shared
+import Time exposing (Posix)
+import Time.Extra as Time
+import Time.Extra2 as Time
+import Tuple.Extra2 as Tuple
 import View exposing (View)
 
 
@@ -28,7 +36,7 @@ type alias RouteParams =
 
 
 type alias Data =
-    { message : String
+    { plantingDates : PlantingDates
     }
 
 
@@ -47,9 +55,8 @@ route =
 
 data : BackendTask FatalError Data
 data =
-    BackendTask.succeed Data
-        |> BackendTask.andMap
-            (BackendTask.succeed "Hello!")
+    BackendTask.map Data
+        PlantingDates.data
 
 
 head :
@@ -77,12 +84,87 @@ view :
     -> Shared.Model
     -> StaticPayload Data ActionData RouteParams
     -> View (Pages.Msg.Msg Msg)
-view _ _ app =
-    { title = "elm-pages is running"
-    , body =
-        [ Html.h1 [] [ Html.text "elm-pages is up and running!" ]
-        , Html.p []
-            [ Html.text <| "The message is: " ++ app.data.message
+view _ _ static =
+    { title = "North Texas Planting Schedule"
+    , body = viewBody static
+    }
+
+
+viewBody : StaticPayload Data ActionData RouteParams -> List (Html (Pages.Msg.Msg Msg))
+viewBody static =
+    [ Html.h1 [] [ Html.text "North Texas Planting Schedule" ]
+    , Dict.toList static.data.plantingDates
+        |> List.indexedMap viewPlant
+        |> List.concat
+        |> Html.div
+            [ Attributes.css
+                [ Css.property "display" "grid"
+                , Css.property "grid-template-columns" "150px repeat(365, 1fr)"
+                , Css.property "grid-template-rows" ("repeat(" ++ (Dict.size static.data.plantingDates |> String.fromInt) ++ ", 1fr)")
+                ]
+            ]
+    ]
+
+
+viewPlant : Int -> ( String, List PlantingDate ) -> List (Html (Pages.Msg.Msg Msg))
+viewPlant row ( plant, dates ) =
+    Html.h2
+        [ Attributes.css
+            [ Css.property "grid-column" "1"
+            , Css.property "grid-row" (String.fromInt (row + 1))
             ]
         ]
-    }
+        [ Html.text plant ]
+        :: List.concatMap viewPlantingDate dates
+
+
+viewPlantingDate : PlantingDate -> List (Html (Pages.Msg.Msg Msg))
+viewPlantingDate date =
+    let
+        green =
+            Css.hex "D7E9B9"
+
+        yellow =
+            Css.hex "FFFBAC"
+
+        timelines =
+            case date of
+                DirectSow span ->
+                    [ ( green, span ) ]
+
+                Transplant sowWeeksPrior span ->
+                    let
+                        transplantSpan =
+                            Tuple.mapSame (Time.subWeeks sowWeeksPrior) span
+
+                        ( transplantStartDayOfYear, transplantEndDayOfYear ) =
+                            Tuple.mapSame Time.toDayOfYear transplantSpan
+
+                        transplantTimelines =
+                            if transplantStartDayOfYear > transplantEndDayOfYear then
+                                [ ( Time.firstDayOfYear, Tuple.second transplantSpan )
+                                , ( Tuple.first transplantSpan, Time.lastDayOfYear )
+                                ]
+
+                            else
+                                [ transplantSpan ]
+                    in
+                    ( green, span ) :: List.map (Tuple.pair yellow) transplantTimelines
+    in
+    List.map viewTimeline timelines
+
+
+viewTimeline : ( Css.Color, ( Posix, Posix ) ) -> Html (Pages.Msg.Msg Msg)
+viewTimeline ( color, ( start, end ) ) =
+    Html.div
+        [ Attributes.css
+            [ Css.backgroundColor color
+            , Css.height (Css.px 20)
+            , Css.property "grid-column"
+                ([ start, end ]
+                    |> List.map (Time.toDayOfYear >> (+) 1 >> String.fromInt)
+                    |> String.join " / "
+                )
+            ]
+        ]
+        []

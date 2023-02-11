@@ -3,7 +3,8 @@ module Shared exposing (Data, Model, Msg(..), SharedMsg(..), template)
 import BackendTask exposing (BackendTask)
 import Effect exposing (Effect)
 import FatalError exposing (FatalError)
-import Html exposing (Html)
+import Html
+import Html.Styled
 import Pages.Flags
 import Pages.PageUrl exposing (PageUrl)
 import Path exposing (Path)
@@ -84,11 +85,10 @@ view :
     -> Model
     -> (Msg -> msg)
     -> View msg
-    -> { body : List (Html msg), title : String }
-view _ _ _ toMsg pageView =
+    -> { body : List (Html.Html msg), title : String }
+view _ _ _ _ pageView =
     { body =
-        [ Html.text "" |> Html.map toMsg
-        , Html.main_ [] pageView.body
+        [ Html.Styled.toUnstyled <| Html.Styled.main_ [] pageView.body
         ]
     , title = pageView.title
     }
