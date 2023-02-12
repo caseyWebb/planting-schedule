@@ -1,24 +1,360 @@
 {
-  "Beans": [
+  "arugula": [
     {
       "type": "direct-sow",
-      "start": "3/15",
-      "end": "4/20"
-    }
-  ],
-  "Beets": [
+      "start": "02/15",
+      "end": "05/15"
+    },
     {
       "type": "direct-sow",
-      "start": "2/15",
-      "end": "3/15"
+      "start": "09/15",
+      "end": "11/15"
     }
   ],
-  "Broccoli": [
+  "beans": [
+    {
+      "type": "direct-sow",
+      "start": "03/01",
+      "end": "06/15"
+    }
+  ],
+  "beets": [
+    {
+      "type": "direct-sow",
+      "start": "02/15",
+      "end": "06/15"
+    },
+    {
+      "type": "direct-sow",
+      "start": "09/01",
+      "end": "11/15"
+    }
+  ],
+  "bok choy": [
+    {
+      "type": "direct-sow",
+      "start": "03/01",
+      "end": "06/15"
+    },
+    {
+      "type": "direct-sow",
+      "start": "09/15",
+      "end": "11/15"
+    }
+  ],
+  "broccoli": [
     {
       "type": "transplant",
-      "sowWeeksPrior": 6,
-      "start": "2/1",
-      "end": "2/30"
+      "start": "02/01",
+      "end": "03/15",
+      "sowWeeksPrior": 6
+    }
+  ],
+  "brussels sprouts": [
+    {
+      "type": "transplant",
+      "start": "02/01",
+      "end": "03/15",
+      "sowWeeksPrior": 6
+    }
+  ],
+  "cabbage": [
+    {
+      "type": "transplant",
+      "start": "02/01",
+      "end": "03/15",
+      "sowWeeksPrior": 6
+    }
+  ],
+  "carrots": [
+    {
+      "type": "direct-sow",
+      "start": "02/15",
+      "end": "06/15"
+    },
+    {
+      "type": "direct-sow",
+      "start": "09/01",
+      "end": "11/15"
+    }
+  ],
+  "cauliflower": [
+    {
+      "type": "transplant",
+      "start": "02/01",
+      "end": "03/15",
+      "sowWeeksPrior": 6
+    }
+  ],
+  "celery": [
+    {
+      "type": "transplant",
+      "start": "02/01",
+      "end": "03/15",
+      "sowWeeksPrior": 6
+    }
+  ],
+  "swiss chard": [
+    {
+      "type": "direct-sow",
+      "start": "02/15",
+      "end": "06/15"
+    },
+    {
+      "type": "direct-sow",
+      "start": "09/15",
+      "end": "11/15"
+    }
+  ],
+  "collards": [
+    {
+      "type": "transplant",
+      "start": "02/01",
+      "end": "03/15",
+      "sowWeeksPrior": 6
+    }
+  ],
+  "corn": [
+    {
+      "type": "direct-sow",
+      "start": "03/15",
+      "end": "06/15"
+    }
+  ],
+  "cucumbers": [
+    {
+      "type": "direct-sow",
+      "start": "03/15",
+      "end": "06/15"
+    }
+  ],
+  "eggplant": [
+    {
+      "type": "transplant",
+      "start": "03/15",
+      "end": "04/15",
+      "sowWeeksPrior": 6
+    }
+  ],
+  "garlic": [
+    {
+      "type": "direct-sow",
+      "start": "10/15",
+      "end": "11/15"
+    }
+  ],
+  "horseradish": [
+    {
+      "type": "direct-sow",
+      "start": "10/15",
+      "end": "11/15"
+    }
+  ],
+  "kale": [
+    {
+      "type": "direct-sow",
+      "start": "03/01",
+      "end": "06/15"
+    },
+    {
+      "type": "direct-sow",
+      "start": "09/15",
+      "end": "11/15"
+    }
+  ],
+  "kohlrabi": [
+    {
+      "type": "direct-sow",
+      "start": "02/15",
+      "end": "06/15"
+    },
+    {
+      "type": "direct-sow",
+      "start": "09/15",
+      "end": "11/15"
+    }
+  ],
+  "lettuce": [
+    {
+      "type": "direct-sow",
+      "start": "02/15",
+      "end": "06/15"
+    },
+    {
+      "type": "direct-sow",
+      "start": "09/15",
+      "end": "11/15"
+    }
+  ],
+  "melons": [
+    {
+      "type": "direct-sow",
+      "start": "03/15",
+      "end": "06/15"
+    }
+  ],
+  "mustard": [
+    {
+      "type": "direct-sow",
+      "start": "02/15",
+      "end": "06/15"
+    },
+    {
+      "type": "direct-sow",
+      "start": "09/15",
+      "end": "11/15"
+    }
+  ],
+  "okra": [
+    {
+      "type": "direct-sow",
+      "start": "03/15",
+      "end": "06/15"
+    }
+  ],
+  "onions": [
+    {
+      "type": "transplant",
+      "start": "01/15",
+      "end": "03/15",
+      "sowWeeksPrior": 6
+    }
+  ],
+  "peppers": [
+    {
+      "type": "transplant",
+      "start": "03/15",
+      "end": "04/15",
+      "sowWeeksPrior": 6
+    }
+  ],
+  "potatoes": [
+    {
+      "type": "direct-sow",
+      "start": "02/15",
+      "end": "04/15"
+    }
+  ],
+  "pumpkins": [
+    {
+      "type": "direct-sow",
+      "start": "05/01",
+      "end": "06/15"
+    }
+  ],
+  "winter squash": [
+    {
+      "type": "direct-sow",
+      "start": "05/01",
+      "end": "06/15"
+    }
+  ],
+  "radishes": [
+    {
+      "type": "direct-sow",
+      "start": "02/15",
+      "end": "06/15"
+    },
+    {
+      "type": "direct-sow",
+      "start": "09/15",
+      "end": "11/15"
+    }
+  ],
+  "cowpeas": [
+    {
+      "type": "direct-sow",
+      "start": "03/15",
+      "end": "06/30"
+    }
+  ],
+  "spinach": [
+    {
+      "type": "direct-sow",
+      "start": "02/15",
+      "end": "06/15"
+    },
+    {
+      "type": "direct-sow",
+      "start": "09/15",
+      "end": "11/15"
+    }
+  ],
+  "summer squash": [
+    {
+      "type": "direct-sow",
+      "start": "03/15",
+      "end": "06/15"
+    }
+  ],
+  "peas": [
+    {
+      "type": "direct-sow",
+      "start": "02/15",
+      "end": "03/15"
+    }
+  ],
+  "sweet potatoes": [
+    {
+      "type": "transplant",
+      "start": "03/15",
+      "end": "04/15",
+      "sowWeeksPrior": 6
+    }
+  ],
+  "tomatoes": [
+    {
+      "type": "transplant",
+      "start": "03/15",
+      "end": "04/15",
+      "sowWeeksPrior": 6
+    }
+  ],
+  "turnips": [
+    {
+      "type": "direct-sow",
+      "start": "02/15",
+      "end": "06/15"
+    },
+    {
+      "type": "direct-sow",
+      "start": "09/15",
+      "end": "11/15"
+    }
+  ],
+  "dill": [
+    {
+      "type": "direct-sow",
+      "start": "03/15",
+      "end": "06/15"
+    }
+  ],
+  "fennel": [
+    {
+      "type": "direct-sow",
+      "start": "03/15",
+      "end": "06/15"
+    }
+  ],
+  "cilantro": [
+    {
+      "type": "direct-sow",
+      "start": "03/15",
+      "end": "06/15"
+    }
+  ],
+  "parsley": [
+    {
+      "type": "direct-sow",
+      "start": "03/15",
+      "end": "06/15"
+    }
+  ],
+  "basil": [
+    {
+      "type": "direct-sow",
+      "start": "03/15",
+      "end": "06/15"
     }
   ]
 }
