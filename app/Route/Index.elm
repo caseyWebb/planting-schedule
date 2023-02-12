@@ -238,7 +238,7 @@ viewPlantingDate row date =
                     ( Css.batch
                         [ Css.backgroundColor green
                         , Css.position Css.relative
-                        , Css.top (Css.px 10)
+                        , Css.top (Css.px 5)
                         ]
                     , span
                     )
@@ -247,7 +247,7 @@ viewPlantingDate row date =
                                 (Css.batch
                                     [ Css.backgroundColor yellow
                                     , Css.position Css.relative
-                                    , Css.top (Css.px -10)
+                                    , Css.top (Css.px -5)
                                     ]
                                 )
                             )
@@ -274,7 +274,7 @@ viewTimeline row ( styles, ( start, end ) ) =
         [ Html.div
             [ Attributes.css
                 [ styles
-                , Css.height (Css.px 10)
+                , Css.height (Css.px 5)
                 , Css.width (Css.pct 100)
                 ]
             ]
