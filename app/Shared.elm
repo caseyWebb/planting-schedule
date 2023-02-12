@@ -1,10 +1,12 @@
 module Shared exposing (Data, Model, Msg(..), SharedMsg(..), template)
 
 import BackendTask exposing (BackendTask)
+import Css
 import Effect exposing (Effect)
 import FatalError exposing (FatalError)
 import Html
 import Html.Styled
+import Html.Styled.Attributes as Attributes
 import Pages.Flags
 import Pages.PageUrl exposing (PageUrl)
 import Path exposing (Path)
@@ -88,7 +90,23 @@ view :
     -> { body : List (Html.Html msg), title : String }
 view _ _ _ _ pageView =
     { body =
-        [ Html.Styled.toUnstyled <| Html.Styled.main_ [] pageView.body
+        [ Html.Styled.toUnstyled <|
+            Html.Styled.main_
+                [ Attributes.css
+                    [ Css.padding2 (Css.px 100) (Css.px 50)
+                    , Css.minHeight (Css.calc (Css.vh 100) Css.minus (Css.px 100))
+                    , Css.displayFlex
+                    , Css.justifyContent Css.center
+                    ]
+                ]
+                [ Html.Styled.div
+                    [ Attributes.css
+                        [ Css.maxWidth (Css.px 1200)
+                        , Css.flexGrow (Css.int 1)
+                        ]
+                    ]
+                    pageView.body
+                ]
         ]
     , title = pageView.title
     }

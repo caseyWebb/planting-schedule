@@ -92,8 +92,7 @@ view _ _ static =
 
 viewBody : StaticPayload Data ActionData RouteParams -> List (Html (Pages.Msg.Msg Msg))
 viewBody static =
-    [ Html.h1 [] [ Html.text "North Texas Planting Schedule" ]
-    , Html.div
+    [ Html.div
         [ Attributes.css
             [ Css.property "display" "grid"
             , Css.property "grid-template-columns" "150px repeat(365, 1fr)"
@@ -124,17 +123,25 @@ viewHeader =
                     [ Attributes.css
                         [ Css.property "grid-column" (String.join "/" [ start, end ])
                         , Css.property "grid-row" "1/-1"
+
+                        -- , Css.paddingTop (Css.px 20)
+                        , Css.fontSize (Css.px 18)
+                        , Css.fontWeight Css.bold
                         , Css.textAlign Css.center
                         , Css.backgroundColor
                             (if modBy 2 i == 0 then
-                                Css.hex "F0F0F0"
+                                Css.rgba 255 255 255 0.03
 
                              else
-                                Css.hex "E0E0E0"
+                                Css.rgba 0 0 0 0
                             )
                         ]
                     ]
-                    [ Html.text (Time.monthNameShort month) ]
+                    [ Html.span
+                        [ Attributes.css [ Css.position Css.relative, Css.top (Css.px -40) ]
+                        ]
+                        [ Html.text (Time.monthNameShort month) ]
+                    ]
             )
 
 
@@ -153,16 +160,16 @@ viewPlant row ( plant, dates ) =
 viewPlantingDate : Int -> PlantingDate -> List (Html (Pages.Msg.Msg Msg))
 viewPlantingDate row date =
     let
-        green =
-            Css.hex "D7E9B9"
-
         yellow =
-            Css.hex "FFFBAC"
+            Css.hex "D8E9A8"
+
+        green =
+            Css.hex "4E9F3D"
 
         timelines =
             case date of
                 DirectSow span ->
-                    [ ( green, span ) ]
+                    [ ( Css.backgroundColor green, span ) ]
 
                 Transplant sowWeeksPrior span ->
                     let
@@ -181,13 +188,29 @@ viewPlantingDate row date =
                             else
                                 [ transplantSpan ]
                     in
-                    ( green, span ) :: List.map (Tuple.pair yellow) transplantTimelines
+                    ( Css.batch
+                        [ Css.backgroundColor green
+                        , Css.position Css.relative
+                        , Css.top (Css.px 10)
+                        ]
+                    , span
+                    )
+                        :: List.map
+                            (Tuple.pair
+                                (Css.batch
+                                    [ Css.backgroundColor yellow
+                                    , Css.position Css.relative
+                                    , Css.top (Css.px -10)
+                                    ]
+                                )
+                            )
+                            transplantTimelines
     in
     List.map (viewTimeline row) timelines
 
 
-viewTimeline : Int -> ( Css.Color, ( Posix, Posix ) ) -> Html (Pages.Msg.Msg Msg)
-viewTimeline row ( color, ( start, end ) ) =
+viewTimeline : Int -> ( Css.Style, ( Posix, Posix ) ) -> Html (Pages.Msg.Msg Msg)
+viewTimeline row ( styles, ( start, end ) ) =
     Html.div
         [ Attributes.css
             [ Css.height (Css.pct 100)
@@ -203,8 +226,8 @@ viewTimeline row ( color, ( start, end ) ) =
         ]
         [ Html.div
             [ Attributes.css
-                [ Css.backgroundColor color
-                , Css.height (Css.px 20)
+                [ styles
+                , Css.height (Css.px 10)
                 , Css.width (Css.pct 100)
                 ]
             ]
