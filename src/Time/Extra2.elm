@@ -1,5 +1,6 @@
 module Time.Extra2 exposing
-    ( addWeeks
+    ( DateRange
+    , addWeeks
     , firstDayOfMonth
     , firstDayOfYear
     , lastDayOfMonth
@@ -14,6 +15,10 @@ import List as List
 import List.Extra as List
 import Time exposing (..)
 import Time.Extra as Time
+
+
+type alias DateRange =
+    ( Posix, Posix )
 
 
 months : List Month

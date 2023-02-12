@@ -11,6 +11,7 @@ import String
 import String.Extra2 as String
 import Time exposing (Posix)
 import Time.Extra as Time
+import Time.Extra2 as Time exposing (DateRange)
 
 
 type alias PlantingDates =
@@ -18,8 +19,8 @@ type alias PlantingDates =
 
 
 type PlantingDate
-    = DirectSow ( Posix, Posix )
-    | Transplant Int ( Posix, Posix )
+    = DirectSow DateRange
+    | Transplant DateRange Int
 
 
 data : BackendTask FatalError PlantingDates
@@ -58,7 +59,7 @@ decodeDirectSow =
 
 decodeTransplant : Decoder PlantingDate
 decodeTransplant =
-    Decode.map3 (\weeks start end -> Transplant weeks ( start, end ))
+    Decode.map3 (\weeks start end -> Transplant ( start, end ) weeks)
         (Decode.field "sowWeeksPrior" Decode.int)
         (Decode.field "start" decodePlantingTime)
         (Decode.field "end" decodePlantingTime)

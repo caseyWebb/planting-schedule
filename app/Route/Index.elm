@@ -10,6 +10,7 @@ import Head
 import Head.Seo as Seo
 import Html.Styled as Html exposing (Html)
 import Html.Styled.Attributes as Attributes
+import Maybe.Extra as Maybe
 import Pages.Msg
 import Pages.PageUrl exposing (PageUrl)
 import Pages.Url
@@ -17,10 +18,10 @@ import Path exposing (Path)
 import Route
 import RouteBuilder exposing (StatefulRoute, StaticPayload)
 import Shared
-import Task
+import String.Extra as String
 import Time exposing (Posix)
 import Time.Extra as Time
-import Time.Extra2 as Time
+import Time.Extra2 as Time exposing (DateRange)
 import Tuple.Extra2 as Tuple
 import View exposing (View)
 
@@ -120,18 +121,8 @@ view _ _ model static =
     }
 
 
-indirectSowColor : Css.Color
-indirectSowColor =
-    Css.hex "1E5128"
-
-
-transplantColor : Css.Color
-transplantColor =
-    Css.hex "D8E9A8"
-
-
-directSowColor : Css.Color
-directSowColor =
+green : Css.Color
+green =
     Css.hex "4E9F3D"
 
 
@@ -141,16 +132,19 @@ viewBody model static =
     , Html.div
         [ Attributes.css
             [ Css.property "display" "grid"
-            , Css.property "grid-template-columns" "150px repeat(365, 1fr)"
+            , Css.property "grid-template-columns" "auto repeat(365, 1fr)"
             , Css.property "grid-template-rows" ("repeat(" ++ (Dict.size static.data.plantingDates |> String.fromInt) ++ ", 1fr)")
+            , Css.borderRight3 (Css.px 3) Css.solid (Css.rgba 255 255 255 0.03)
             ]
         ]
         (viewMonthLabels
-            ++ (Maybe.map viewTodayMarker model.today |> Maybe.withDefault [ Html.text "nothing" ])
-            ++ (Dict.toList static.data.plantingDates
+            |> Maybe.cons (Maybe.map viewTodayMarker model.today)
+            |> List.append viewFrostDates
+            |> List.append
+                (Dict.toList static.data.plantingDates
                     |> List.indexedMap (\i -> viewPlant (i + 1))
                     |> List.concat
-               )
+                )
         )
     ]
 
@@ -160,44 +154,46 @@ viewLegend =
     Html.div
         [ Attributes.css
             [ Css.displayFlex
-            , Css.flexDirection Css.row
-            , Css.alignItems Css.center
             , Css.justifyContent Css.center
-            , Css.marginBottom (Css.px 100)
             ]
         ]
         [ Html.div
             [ Attributes.css
-                [ Css.width (Css.px 20)
-                , Css.height (Css.px 20)
-                , Css.backgroundColor directSowColor
-                , Css.marginRight (Css.px 10)
+                [ Css.displayFlex
+                , Css.flexDirection Css.row
+                , Css.alignItems Css.center
+                , Css.justifyContent Css.spaceBetween
+                , Css.marginBottom (Css.px 100)
+                , Css.property "gap" "5em"
+                , Css.width (Css.pct 100)
+                , Css.maxWidth (Css.px 800)
                 ]
             ]
-            []
-        , Html.text "Direct sow"
-        , Html.div
-            [ Attributes.css
-                [ Css.width (Css.px 20)
-                , Css.height (Css.px 20)
-                , Css.backgroundColor indirectSowColor
-                , Css.marginRight (Css.px 10)
-                , Css.marginLeft (Css.px 20)
+            [ Html.span
+                [ Attributes.css
+                    [ Css.borderBottom3 (Css.px 3) Css.solid green
+                    , Css.paddingBottom (Css.px 10)
+                    , Css.flex (Css.int 1)
+                    ]
                 ]
-            ]
-            []
-        , Html.text "Indirect sow"
-        , Html.div
-            [ Attributes.css
-                [ Css.width (Css.px 20)
-                , Css.height (Css.px 20)
-                , Css.backgroundColor transplantColor
-                , Css.marginRight (Css.px 10)
-                , Css.marginLeft (Css.px 20)
+                [ Html.text "Direct sow" ]
+            , Html.span
+                [ Attributes.css
+                    [ Css.borderBottom3 (Css.px 3) Css.dashed green
+                    , Css.paddingBottom (Css.px 10)
+                    , Css.flex (Css.int 1)
+                    ]
                 ]
+                [ Html.text "Indirect sow" ]
+            , Html.span
+                [ Attributes.css
+                    [ Css.borderBottom3 (Css.px 8) Css.double green
+                    , Css.paddingBottom (Css.px 8)
+                    , Css.flex (Css.int 1)
+                    ]
+                ]
+                [ Html.text "Transplant" ]
             ]
-            []
-        , Html.text "Transplant"
         ]
 
 
@@ -206,52 +202,63 @@ viewMonthLabels =
     Time.months
         |> List.indexedMap
             (\i month ->
-                let
-                    ( start, end ) =
-                        ( month, month )
-                            |> Tuple.mapBoth Time.firstDayOfMonth Time.lastDayOfMonth
-                            |> Tuple.mapSame (Time.toDayOfYear >> (+) 1 >> String.fromInt)
-                in
-                Html.div
-                    [ Attributes.css
-                        [ Css.property "grid-column" (String.join "/" [ start, end ])
-                        , Css.property "grid-row" "1/-1"
-                        , Css.fontSize (Css.px 18)
-                        , Css.fontWeight Css.bold
-                        , Css.textAlign Css.center
-                        , Css.backgroundColor
-                            (if modBy 2 i == 0 then
-                                Css.rgba 255 255 255 0.03
+                viewDateRangeOverlay
+                    (if modBy 2 i == 0 then
+                        Css.rgba 255 255 255 0.03
 
-                             else
-                                Css.rgba 0 0 0 0
-                            )
-                        ]
+                     else
+                        Css.rgba 0 0 0 0
+                    )
+                    [ Css.fontSize (Css.px 18)
+                    , Css.fontWeight Css.bold
+                    , Css.textAlign Css.center
                     ]
                     [ Html.span
                         [ Attributes.css [ Css.position Css.relative, Css.top (Css.px -40) ]
                         ]
                         [ Html.text (Time.monthNameShort month) ]
                     ]
+                    ( Time.firstDayOfMonth month, Time.lastDayOfMonth month )
             )
 
 
-viewTodayMarker : Posix -> List (Html (Pages.Msg.Msg Msg))
+viewTodayMarker : Posix -> Html (Pages.Msg.Msg Msg)
 viewTodayMarker today =
+    viewDateRangeOverlay (Css.hex "EEBB4D") [] [] ( today, today )
+
+
+viewFrostDates : List (Html (Pages.Msg.Msg Msg))
+viewFrostDates =
     let
-        todayMarker =
-            Html.div
-                [ Attributes.css
-                    [ Css.property "grid-column" (Time.toDayOfYear today |> String.fromInt)
-                    , Css.property "grid-row" "1/-1"
-                    , Css.backgroundColor (Css.hex "550527")
-                    , Css.height (Css.pct 100)
-                    , Css.width (Css.px 3)
-                    ]
-                ]
-                []
+        lastFrost =
+            ( Time.firstDayOfYear
+            , Time.fromDateTuple Time.utc ( 1970, Time.Apr, 1 )
+            )
+
+        firstFrost =
+            ( Time.fromDateTuple Time.utc ( 1970, Time.Nov, 1 )
+            , Time.lastDayOfYear
+            )
     in
-    [ todayMarker ]
+    List.map (viewDateRangeOverlay (Css.hex "00337C") [] []) [ lastFrost, firstFrost ]
+
+
+viewDateRangeOverlay : Css.Color -> List Css.Style -> List (Html msg) -> DateRange -> Html msg
+viewDateRangeOverlay color styles contents span =
+    let
+        ( start, end ) =
+            Tuple.mapSame (Time.toDayOfYear >> (+) 1 >> String.fromInt) span
+    in
+    Html.div
+        [ Attributes.css
+            [ Css.property "grid-column" (String.join "/" [ start, end ])
+            , Css.property "grid-row" "1/-1"
+            , Css.backgroundColor color
+            , Css.zIndex (Css.int 0)
+            , Css.batch styles
+            ]
+        ]
+        contents
 
 
 viewPlant : Int -> ( String, List PlantingDate ) -> List (Html (Pages.Msg.Msg Msg))
@@ -260,9 +267,12 @@ viewPlant row ( plant, dates ) =
         [ Attributes.css
             [ Css.property "grid-column" "1"
             , Css.property "grid-row" (String.fromInt row)
+            , Css.fontSize (Css.px 20)
+            , Css.textAlign Css.right
+            , Css.paddingRight (Css.em 1.2)
             ]
         ]
-        [ Html.text plant ]
+        [ Html.text (String.toTitleCase plant) ]
         :: List.concatMap (viewPlantingDate row) dates
 
 
@@ -272,9 +282,9 @@ viewPlantingDate row date =
         timelines =
             case date of
                 DirectSow span ->
-                    [ ( Css.backgroundColor directSowColor, span ) ]
+                    [ ( Css.borderTop3 (Css.px 3) Css.solid green, span ) ]
 
-                Transplant sowWeeksPrior span ->
+                Transplant span sowWeeksPrior ->
                     let
                         transplantSpan =
                             Tuple.mapSame (Time.subWeeks sowWeeksPrior) span
@@ -292,18 +302,14 @@ viewPlantingDate row date =
                                 [ transplantSpan ]
                     in
                     ( Css.batch
-                        [ Css.backgroundColor transplantColor
-                        , Css.position Css.relative
-                        , Css.top (Css.px -2)
+                        [ Css.borderTop3 (Css.px 6) Css.double green
                         ]
                     , span
                     )
                         :: List.map
                             (Tuple.pair
                                 (Css.batch
-                                    [ Css.backgroundColor indirectSowColor
-                                    , Css.position Css.relative
-                                    , Css.top (Css.px 2)
+                                    [ Css.borderTop3 (Css.px 3) Css.dashed green
                                     ]
                                 )
                             )
@@ -312,11 +318,12 @@ viewPlantingDate row date =
     List.map (viewTimeline row) timelines
 
 
-viewTimeline : Int -> ( Css.Style, ( Posix, Posix ) ) -> Html (Pages.Msg.Msg Msg)
+viewTimeline : Int -> ( Css.Style, DateRange ) -> Html (Pages.Msg.Msg Msg)
 viewTimeline row ( styles, ( start, end ) ) =
     Html.div
         [ Attributes.css
             [ Css.height (Css.pct 100)
+            , Css.zIndex (Css.int 1)
             , Css.displayFlex
             , Css.alignItems Css.center
             , Css.property "grid-row" (String.fromInt row)
@@ -329,10 +336,7 @@ viewTimeline row ( styles, ( start, end ) ) =
         ]
         [ Html.div
             [ Attributes.css
-                [ styles
-                , Css.height (Css.px 5)
-                , Css.width (Css.pct 100)
-                ]
+                [ styles, Css.width (Css.pct 100) ]
             ]
             []
         ]
