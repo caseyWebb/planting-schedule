@@ -93,17 +93,49 @@ view _ _ static =
 viewBody : StaticPayload Data ActionData RouteParams -> List (Html (Pages.Msg.Msg Msg))
 viewBody static =
     [ Html.h1 [] [ Html.text "North Texas Planting Schedule" ]
-    , Dict.toList static.data.plantingDates
-        |> List.indexedMap viewPlant
-        |> List.concat
-        |> Html.div
-            [ Attributes.css
-                [ Css.property "display" "grid"
-                , Css.property "grid-template-columns" "150px repeat(365, 1fr)"
-                , Css.property "grid-template-rows" ("repeat(" ++ (Dict.size static.data.plantingDates |> String.fromInt) ++ ", 1fr)")
-                ]
+    , Html.div
+        [ Attributes.css
+            [ Css.property "display" "grid"
+            , Css.property "grid-template-columns" "150px repeat(365, 1fr)"
+            , Css.property "grid-template-rows" ("repeat(" ++ (Dict.size static.data.plantingDates |> String.fromInt) ++ ", 1fr)")
             ]
+        ]
+        (viewHeader
+            ++ (Dict.toList static.data.plantingDates
+                    |> List.indexedMap (\i -> viewPlant (i + 1))
+                    |> List.concat
+               )
+        )
     ]
+
+
+viewHeader : List (Html (Pages.Msg.Msg Msg))
+viewHeader =
+    Time.months
+        |> List.indexedMap
+            (\i month ->
+                let
+                    ( start, end ) =
+                        ( month, month )
+                            |> Tuple.mapBoth Time.firstDayOfMonth Time.lastDayOfMonth
+                            |> Tuple.mapSame (Time.toDayOfYear >> (+) 1 >> String.fromInt)
+                in
+                Html.div
+                    [ Attributes.css
+                        [ Css.property "grid-column" (String.join "/" [ start, end ])
+                        , Css.property "grid-row" "1/-1"
+                        , Css.textAlign Css.center
+                        , Css.backgroundColor
+                            (if modBy 2 i == 0 then
+                                Css.hex "F0F0F0"
+
+                             else
+                                Css.hex "E0E0E0"
+                            )
+                        ]
+                    ]
+                    [ Html.text (Time.monthNameShort month) ]
+            )
 
 
 viewPlant : Int -> ( String, List PlantingDate ) -> List (Html (Pages.Msg.Msg Msg))
@@ -111,15 +143,15 @@ viewPlant row ( plant, dates ) =
     Html.h2
         [ Attributes.css
             [ Css.property "grid-column" "1"
-            , Css.property "grid-row" (String.fromInt (row + 1))
+            , Css.property "grid-row" (String.fromInt row)
             ]
         ]
         [ Html.text plant ]
-        :: List.concatMap viewPlantingDate dates
+        :: List.concatMap (viewPlantingDate row) dates
 
 
-viewPlantingDate : PlantingDate -> List (Html (Pages.Msg.Msg Msg))
-viewPlantingDate date =
+viewPlantingDate : Int -> PlantingDate -> List (Html (Pages.Msg.Msg Msg))
+viewPlantingDate row date =
     let
         green =
             Css.hex "D7E9B9"
@@ -151,15 +183,17 @@ viewPlantingDate date =
                     in
                     ( green, span ) :: List.map (Tuple.pair yellow) transplantTimelines
     in
-    List.map viewTimeline timelines
+    List.map (viewTimeline row) timelines
 
 
-viewTimeline : ( Css.Color, ( Posix, Posix ) ) -> Html (Pages.Msg.Msg Msg)
-viewTimeline ( color, ( start, end ) ) =
+viewTimeline : Int -> ( Css.Color, ( Posix, Posix ) ) -> Html (Pages.Msg.Msg Msg)
+viewTimeline row ( color, ( start, end ) ) =
     Html.div
         [ Attributes.css
-            [ Css.backgroundColor color
-            , Css.height (Css.px 20)
+            [ Css.height (Css.pct 100)
+            , Css.displayFlex
+            , Css.alignItems Css.center
+            , Css.property "grid-row" (String.fromInt row)
             , Css.property "grid-column"
                 ([ start, end ]
                     |> List.map (Time.toDayOfYear >> (+) 1 >> String.fromInt)
@@ -167,4 +201,12 @@ viewTimeline ( color, ( start, end ) ) =
                 )
             ]
         ]
-        []
+        [ Html.div
+            [ Attributes.css
+                [ Css.backgroundColor color
+                , Css.height (Css.px 20)
+                , Css.width (Css.pct 100)
+                ]
+            ]
+            []
+        ]

@@ -1,7 +1,11 @@
 module Time.Extra2 exposing
     ( addWeeks
+    , firstDayOfMonth
     , firstDayOfYear
+    , lastDayOfMonth
     , lastDayOfYear
+    , monthNameShort
+    , months
     , subWeeks
     , toDayOfYear
     )
@@ -12,9 +16,49 @@ import Time exposing (..)
 import Time.Extra as Time
 
 
-months : List Time.Month
+months : List Month
 months =
     [ Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec ]
+
+
+monthNameShort : Month -> String
+monthNameShort month =
+    case month of
+        Jan ->
+            "Jan"
+
+        Feb ->
+            "Feb"
+
+        Mar ->
+            "Mar"
+
+        Apr ->
+            "Apr"
+
+        May ->
+            "May"
+
+        Jun ->
+            "Jun"
+
+        Jul ->
+            "Jul"
+
+        Aug ->
+            "Aug"
+
+        Sep ->
+            "Sep"
+
+        Oct ->
+            "Oct"
+
+        Nov ->
+            "Nov"
+
+        Dec ->
+            "Dec"
 
 
 toDayOfYear : Posix -> Int
@@ -44,3 +88,13 @@ firstDayOfYear =
 lastDayOfYear : Posix
 lastDayOfYear =
     Time.fromDateTuple Time.utc ( 1970, Dec, 31 )
+
+
+firstDayOfMonth : Month -> Posix
+firstDayOfMonth month =
+    Time.fromDateTuple Time.utc ( 1970, month, 1 )
+
+
+lastDayOfMonth : Month -> Posix
+lastDayOfMonth month =
+    Time.fromDateTuple Time.utc ( 1970, month, Time.daysInMonth 1970 month )
