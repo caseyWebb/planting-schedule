@@ -12,6 +12,7 @@ import String.Extra2 as String
 import Time exposing (Posix)
 import Time.Extra as Time
 import Time.Extra2 as Time exposing (DateRange)
+import Tuple.Extra2 as Tuple
 
 
 type alias PlantingDates =

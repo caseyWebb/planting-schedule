@@ -10,6 +10,7 @@ import Head
 import Head.Seo as Seo
 import Html.Styled as Html exposing (Html)
 import Html.Styled.Attributes as Attributes
+import List.Extra as List
 import Maybe.Extra as Maybe
 import Pages.Msg
 import Pages.PageUrl exposing (PageUrl)
@@ -285,22 +286,6 @@ viewPlantingDate row date =
                     [ ( Css.borderTop3 (Css.px 3) Css.solid green, span ) ]
 
                 Transplant span sowWeeksPrior ->
-                    let
-                        transplantSpan =
-                            Tuple.mapSame (Time.subWeeks sowWeeksPrior) span
-
-                        ( transplantStartDayOfYear, transplantEndDayOfYear ) =
-                            Tuple.mapSame Time.toDayOfYear transplantSpan
-
-                        transplantTimelines =
-                            if transplantStartDayOfYear > transplantEndDayOfYear then
-                                [ ( Time.firstDayOfYear, Tuple.second transplantSpan )
-                                , ( Tuple.first transplantSpan, Time.lastDayOfYear )
-                                ]
-
-                            else
-                                [ transplantSpan ]
-                    in
                     ( Css.batch
                         [ Css.borderTop3 (Css.px 6) Css.double green
                         ]
@@ -313,7 +298,7 @@ viewPlantingDate row date =
                                     ]
                                 )
                             )
-                            transplantTimelines
+                            (Time.shiftDateRangeWeeks sowWeeksPrior span)
     in
     List.map (viewTimeline row) timelines
 

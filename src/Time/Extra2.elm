@@ -3,10 +3,12 @@ module Time.Extra2 exposing
     , addWeeks
     , firstDayOfMonth
     , firstDayOfYear
+    , inDateRange
     , lastDayOfMonth
     , lastDayOfYear
     , monthNameShort
     , months
+    , shiftDateRangeWeeks
     , subWeeks
     , toDayOfYear
     )
@@ -15,6 +17,7 @@ import List as List
 import List.Extra as List
 import Time exposing (..)
 import Time.Extra as Time
+import Tuple.Extra2 as Tuple
 
 
 type alias DateRange =
@@ -103,3 +106,26 @@ firstDayOfMonth month =
 lastDayOfMonth : Month -> Posix
 lastDayOfMonth month =
     Time.fromDateTuple Time.utc ( 1970, month, Time.daysInMonth 1970 month )
+
+
+inDateRange : DateRange -> Posix -> Bool
+inDateRange ( start, end ) now =
+    Time.compare start now /= GT && Time.compare now end /= GT
+
+
+shiftDateRangeWeeks : Int -> DateRange -> List DateRange
+shiftDateRangeWeeks weeks span =
+    let
+        shifted =
+            Tuple.mapSame (subWeeks weeks) span
+
+        ( startDay, endDay ) =
+            Tuple.mapSame toDayOfYear shifted
+    in
+    if startDay > endDay then
+        [ ( firstDayOfYear, Tuple.second shifted )
+        , ( Tuple.first shifted, lastDayOfYear )
+        ]
+
+    else
+        [ shifted ]
