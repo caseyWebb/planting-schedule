@@ -4,6 +4,7 @@ import BackendTask exposing (BackendTask)
 import Css
 import Data.PlantingDates as PlantingDates exposing (PlantingDate(..), PlantingDates)
 import Dict
+import Effect
 import FatalError exposing (FatalError)
 import Head
 import Head.Seo as Seo
@@ -12,10 +13,11 @@ import Html.Styled.Attributes as Attributes
 import Pages.Msg
 import Pages.PageUrl exposing (PageUrl)
 import Pages.Url
-import Path
+import Path exposing (Path)
 import Route
-import RouteBuilder exposing (StatelessRoute, StaticPayload)
+import RouteBuilder exposing (StatefulRoute, StaticPayload)
 import Shared
+import Task
 import Time exposing (Posix)
 import Time.Extra as Time
 import Time.Extra2 as Time
@@ -24,11 +26,11 @@ import View exposing (View)
 
 
 type alias Model =
-    {}
+    { today : Maybe Posix }
 
 
-type alias Msg =
-    ()
+type Msg
+    = GotCurrentTime Posix
 
 
 type alias RouteParams =
@@ -44,19 +46,18 @@ type alias ActionData =
     {}
 
 
-route : StatelessRoute RouteParams Data ActionData
+route : StatefulRoute RouteParams Data ActionData Model Msg
 route =
     RouteBuilder.single
         { head = head
         , data = data
         }
-        |> RouteBuilder.buildNoState { view = view }
-
-
-data : BackendTask FatalError Data
-data =
-    BackendTask.map Data
-        PlantingDates.data
+        |> RouteBuilder.buildWithLocalState
+            { view = view
+            , init = init
+            , update = update
+            , subscriptions = subscriptions
+            }
 
 
 head :
@@ -79,19 +80,48 @@ head _ =
         |> Seo.website
 
 
+data : BackendTask FatalError Data
+data =
+    BackendTask.map Data
+        PlantingDates.data
+
+
+init : Maybe PageUrl -> Shared.Model -> StaticPayload Data ActionData RouteParams -> ( Model, Effect.Effect Msg )
+init _ _ _ =
+    ( { today = Nothing
+      }
+    , Effect.GetCurrentTime GotCurrentTime
+    )
+
+
+update : PageUrl -> Shared.Model -> StaticPayload Data ActionData RouteParams -> Msg -> Model -> ( Model, Effect.Effect Msg )
+update _ _ _ msg model =
+    case msg of
+        GotCurrentTime time ->
+            ( { model | today = Just time }
+            , Effect.none
+            )
+
+
+subscriptions : Maybe PageUrl -> RouteParams -> Path -> Shared.Model -> Model -> Sub Msg
+subscriptions _ _ _ _ _ =
+    Sub.none
+
+
 view :
     Maybe PageUrl
     -> Shared.Model
+    -> Model
     -> StaticPayload Data ActionData RouteParams
     -> View (Pages.Msg.Msg Msg)
-view _ _ static =
+view _ _ model static =
     { title = "North Texas Planting Schedule"
-    , body = viewBody static
+    , body = viewBody model static
     }
 
 
-viewBody : StaticPayload Data ActionData RouteParams -> List (Html (Pages.Msg.Msg Msg))
-viewBody static =
+viewBody : Model -> StaticPayload Data ActionData RouteParams -> List (Html (Pages.Msg.Msg Msg))
+viewBody model static =
     [ Html.div
         [ Attributes.css
             [ Css.property "display" "grid"
@@ -100,6 +130,7 @@ viewBody static =
             ]
         ]
         (viewHeader
+            ++ (Maybe.map viewTodayMarker model.today |> Maybe.withDefault [ Html.text "nothing" ])
             ++ (Dict.toList static.data.plantingDates
                     |> List.indexedMap (\i -> viewPlant (i + 1))
                     |> List.concat
@@ -123,8 +154,6 @@ viewHeader =
                     [ Attributes.css
                         [ Css.property "grid-column" (String.join "/" [ start, end ])
                         , Css.property "grid-row" "1/-1"
-
-                        -- , Css.paddingTop (Css.px 20)
                         , Css.fontSize (Css.px 18)
                         , Css.fontWeight Css.bold
                         , Css.textAlign Css.center
@@ -143,6 +172,24 @@ viewHeader =
                         [ Html.text (Time.monthNameShort month) ]
                     ]
             )
+
+
+viewTodayMarker : Posix -> List (Html (Pages.Msg.Msg Msg))
+viewTodayMarker today =
+    let
+        todayMarker =
+            Html.div
+                [ Attributes.css
+                    [ Css.property "grid-column" (Time.toDayOfYear today |> String.fromInt)
+                    , Css.property "grid-row" "1/-1"
+                    , Css.backgroundColor (Css.hex "950101")
+                    , Css.height (Css.pct 100)
+                    , Css.width (Css.px 3)
+                    ]
+                ]
+                []
+    in
+    [ todayMarker ]
 
 
 viewPlant : Int -> ( String, List PlantingDate ) -> List (Html (Pages.Msg.Msg Msg))

@@ -10,6 +10,8 @@ import Browser.Navigation
 import Form.FormData exposing (FormData)
 import Http
 import Pages.Fetcher
+import Task
+import Time exposing (Posix)
 import Url exposing (Url)
 
 
@@ -19,6 +21,7 @@ type Effect msg
     | Cmd (Cmd msg)
     | Batch (List (Effect msg))
     | SubmitFetcher (Pages.Fetcher.Fetcher msg)
+    | GetCurrentTime (Posix -> msg)
 
 
 {-| -}
@@ -57,6 +60,9 @@ map fn effect =
                 |> Pages.Fetcher.map fn
                 |> SubmitFetcher
 
+        GetCurrentTime toMsg ->
+            GetCurrentTime (toMsg >> fn)
+
 
 {-| -}
 perform :
@@ -92,3 +98,6 @@ perform ({ fromPageMsg, runFetcher } as helpers) effect =
 
         SubmitFetcher record ->
             runFetcher record
+
+        GetCurrentTime toMsg ->
+            Time.now |> Task.perform (toMsg >> fromPageMsg)
