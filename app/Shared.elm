@@ -97,6 +97,7 @@ view _ _ _ _ pageView =
                     , Css.minHeight (Css.calc (Css.vh 100) Css.minus (Css.px 100))
                     , Css.displayFlex
                     , Css.justifyContent Css.center
+                    , Css.position Css.relative
                     ]
                 ]
                 [ Html.Styled.div
@@ -106,7 +107,27 @@ view _ _ _ _ pageView =
                         ]
                     ]
                     pageView.body
+                , viewFooter
                 ]
         ]
     , title = pageView.title
     }
+
+
+viewFooter : Html.Styled.Html msg
+viewFooter =
+    Html.Styled.footer
+        [ Attributes.css
+            [ Css.position Css.absolute
+            , Css.bottom (Css.em 1.2)
+            , Css.right (Css.em 1.2)
+            , Css.fontWeight Css.bold
+            , Css.fontSize (Css.px 12)
+            ]
+        ]
+        [ Html.Styled.a
+            [ Attributes.alt "View Source Code"
+            , Attributes.href "https://github.com/caseyWebb/planting-schedule"
+            ]
+            [ Html.Styled.text "View Source Code" ]
+        ]
