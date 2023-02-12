@@ -23,11 +23,11 @@ export default async function run({
 
   fs.writeFileSync(
     "./functions/render/index.mjs",
-    rendererCode(true, htmlTemplate)
+    rendererCode(true, portsFilePath, htmlTemplate)
   );
   fs.writeFileSync(
     "./functions/server-render/index.mjs",
-    rendererCode(false, htmlTemplate)
+    rendererCode(false, portsFilePath, htmlTemplate)
   );
   // TODO rename functions/render to functions/fallback-render
   // TODO prepend instead of writing file
@@ -96,7 +96,7 @@ function isServerSide(route) {
  * @param {boolean} isOnDemand
  * @param {string} htmlTemplate
  */
-function rendererCode(isOnDemand, htmlTemplate) {
+function rendererCode(isOnDemand, portsFilePath, htmlTemplate) {
   return `import * as path from "path";
 import * as busboy from "busboy";
 import { fileURLToPath } from "url";
