@@ -120,18 +120,18 @@ view _ _ model static =
     }
 
 
-directSowColor : Css.Color
-directSowColor =
-    Css.hex "1E5128"
-
-
 indirectSowColor : Css.Color
 indirectSowColor =
-    Css.hex "D8E9A8"
+    Css.hex "1E5128"
 
 
 transplantColor : Css.Color
 transplantColor =
+    Css.hex "D8E9A8"
+
+
+directSowColor : Css.Color
+directSowColor =
     Css.hex "4E9F3D"
 
 
