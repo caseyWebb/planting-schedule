@@ -120,16 +120,32 @@ view _ _ model static =
     }
 
 
+directSowColor : Css.Color
+directSowColor =
+    Css.hex "1E5128"
+
+
+indirectSowColor : Css.Color
+indirectSowColor =
+    Css.hex "D8E9A8"
+
+
+transplantColor : Css.Color
+transplantColor =
+    Css.hex "4E9F3D"
+
+
 viewBody : Model -> StaticPayload Data ActionData RouteParams -> List (Html (Pages.Msg.Msg Msg))
 viewBody model static =
-    [ Html.div
+    [ viewLegend
+    , Html.div
         [ Attributes.css
             [ Css.property "display" "grid"
             , Css.property "grid-template-columns" "150px repeat(365, 1fr)"
             , Css.property "grid-template-rows" ("repeat(" ++ (Dict.size static.data.plantingDates |> String.fromInt) ++ ", 1fr)")
             ]
         ]
-        (viewHeader
+        (viewMonthLabels
             ++ (Maybe.map viewTodayMarker model.today |> Maybe.withDefault [ Html.text "nothing" ])
             ++ (Dict.toList static.data.plantingDates
                     |> List.indexedMap (\i -> viewPlant (i + 1))
@@ -139,8 +155,54 @@ viewBody model static =
     ]
 
 
-viewHeader : List (Html (Pages.Msg.Msg Msg))
-viewHeader =
+viewLegend : Html (Pages.Msg.Msg Msg)
+viewLegend =
+    Html.div
+        [ Attributes.css
+            [ Css.displayFlex
+            , Css.flexDirection Css.row
+            , Css.alignItems Css.center
+            , Css.justifyContent Css.center
+            , Css.marginBottom (Css.px 100)
+            ]
+        ]
+        [ Html.div
+            [ Attributes.css
+                [ Css.width (Css.px 20)
+                , Css.height (Css.px 20)
+                , Css.backgroundColor directSowColor
+                , Css.marginRight (Css.px 10)
+                ]
+            ]
+            []
+        , Html.text "Direct sow"
+        , Html.div
+            [ Attributes.css
+                [ Css.width (Css.px 20)
+                , Css.height (Css.px 20)
+                , Css.backgroundColor indirectSowColor
+                , Css.marginRight (Css.px 10)
+                , Css.marginLeft (Css.px 20)
+                ]
+            ]
+            []
+        , Html.text "Indirect sow"
+        , Html.div
+            [ Attributes.css
+                [ Css.width (Css.px 20)
+                , Css.height (Css.px 20)
+                , Css.backgroundColor transplantColor
+                , Css.marginRight (Css.px 10)
+                , Css.marginLeft (Css.px 20)
+                ]
+            ]
+            []
+        , Html.text "Transplant"
+        ]
+
+
+viewMonthLabels : List (Html (Pages.Msg.Msg Msg))
+viewMonthLabels =
     Time.months
         |> List.indexedMap
             (\i month ->
@@ -182,7 +244,7 @@ viewTodayMarker today =
                 [ Attributes.css
                     [ Css.property "grid-column" (Time.toDayOfYear today |> String.fromInt)
                     , Css.property "grid-row" "1/-1"
-                    , Css.backgroundColor (Css.hex "950101")
+                    , Css.backgroundColor (Css.hex "550527")
                     , Css.height (Css.pct 100)
                     , Css.width (Css.px 3)
                     ]
@@ -207,16 +269,10 @@ viewPlant row ( plant, dates ) =
 viewPlantingDate : Int -> PlantingDate -> List (Html (Pages.Msg.Msg Msg))
 viewPlantingDate row date =
     let
-        yellow =
-            Css.hex "D8E9A8"
-
-        green =
-            Css.hex "4E9F3D"
-
         timelines =
             case date of
                 DirectSow span ->
-                    [ ( Css.backgroundColor green, span ) ]
+                    [ ( Css.backgroundColor directSowColor, span ) ]
 
                 Transplant sowWeeksPrior span ->
                     let
@@ -236,18 +292,18 @@ viewPlantingDate row date =
                                 [ transplantSpan ]
                     in
                     ( Css.batch
-                        [ Css.backgroundColor green
+                        [ Css.backgroundColor transplantColor
                         , Css.position Css.relative
-                        , Css.top (Css.px 5)
+                        , Css.top (Css.px -2)
                         ]
                     , span
                     )
                         :: List.map
                             (Tuple.pair
                                 (Css.batch
-                                    [ Css.backgroundColor yellow
+                                    [ Css.backgroundColor indirectSowColor
                                     , Css.position Css.relative
-                                    , Css.top (Css.px -5)
+                                    , Css.top (Css.px 2)
                                     ]
                                 )
                             )
