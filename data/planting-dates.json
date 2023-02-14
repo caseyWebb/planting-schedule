@@ -14,7 +14,7 @@
   "beans": [
     {
       "type": "direct-sow",
-      "start": "03/01",
+      "start": "03/15",
       "end": "06/15"
     }
   ],
@@ -97,7 +97,7 @@
   "swiss chard": [
     {
       "type": "direct-sow",
-      "start": "02/15",
+      "start": "02/01",
       "end": "06/15"
     },
     {
@@ -131,9 +131,9 @@
   "eggplant": [
     {
       "type": "transplant",
-      "start": "03/15",
+      "start": "04/01",
       "end": "04/15",
-      "sowWeeksPrior": 6
+      "sowWeeksPrior": 10
     }
   ],
   "garlic": [
@@ -146,14 +146,14 @@
   "horseradish": [
     {
       "type": "direct-sow",
-      "start": "10/15",
-      "end": "11/15"
+      "start": "02/15",
+      "end": "03/01"
     }
   ],
   "kale": [
     {
       "type": "direct-sow",
-      "start": "03/01",
+      "start": "02/01",
       "end": "06/15"
     },
     {
@@ -165,7 +165,7 @@
   "kohlrabi": [
     {
       "type": "direct-sow",
-      "start": "02/15",
+      "start": "02/01",
       "end": "06/15"
     },
     {
@@ -208,7 +208,7 @@
   "okra": [
     {
       "type": "direct-sow",
-      "start": "03/15",
+      "start": "05/15",
       "end": "06/15"
     }
   ],
@@ -223,23 +223,23 @@
   "peppers": [
     {
       "type": "transplant",
-      "start": "03/15",
+      "start": "04/01",
       "end": "04/15",
-      "sowWeeksPrior": 6
+      "sowWeeksPrior": 12
     }
   ],
   "potatoes": [
     {
       "type": "direct-sow",
-      "start": "02/15",
+      "start": "02/01",
       "end": "04/15"
     }
   ],
   "pumpkins": [
     {
       "type": "direct-sow",
-      "start": "05/01",
-      "end": "06/15"
+      "start": "03/15",
+      "end": "06/30"
     }
   ],
   "winter squash": [
@@ -264,7 +264,7 @@
   "cowpeas": [
     {
       "type": "direct-sow",
-      "start": "03/15",
+      "start": "04/15",
       "end": "06/30"
     }
   ],
@@ -290,15 +290,15 @@
   "peas": [
     {
       "type": "direct-sow",
-      "start": "02/15",
-      "end": "03/15"
+      "start": "02/01",
+      "end": "02/10"
     }
   ],
   "sweet potatoes": [
     {
       "type": "transplant",
-      "start": "03/15",
-      "end": "04/15",
+      "start": "04/15",
+      "end": "04/30",
       "sowWeeksPrior": 6
     }
   ],
