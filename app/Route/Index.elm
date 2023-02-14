@@ -143,6 +143,19 @@ viewBody model static =
             |> List.append viewFrostDates
             |> List.append
                 (Dict.toList static.data.plantingDates
+                    |> List.sortBy
+                        (\( _, v ) ->
+                            Time.posixToMillis <|
+                                case v of
+                                    (DirectSow ( start, _ )) :: _ ->
+                                        start
+
+                                    (Transplant ( start, _ ) weeks) :: _ ->
+                                        Time.addDays (weeks * -7) start
+
+                                    _ ->
+                                        Time.millisToPosix 0
+                        )
                     |> List.indexedMap (\i -> viewPlant (i + 1))
                     |> List.concat
                 )
